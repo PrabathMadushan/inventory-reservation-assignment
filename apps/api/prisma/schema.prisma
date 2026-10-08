@@ -1,0 +1,144 @@
+// Money and quantities are persisted as exact integers, never floating point.
+// SQL CHECK constraints are maintained in the initial migration.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  OPERATIONS
+
+  @@map("user_role")
+}
+
+enum Currency {
+  LKR
+
+  @@map("currency")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+
+  @@map("order_status")
+}
+
+enum TransitionReason {
+  ORDER_CREATED
+  PAYMENT_SUCCEEDED
+  PAYMENT_FAILED
+  CUSTOMER_CANCELLED
+
+  @@map("transition_reason")
+}
+
+enum PaymentEventType {
+  PAYMENT_SUCCEEDED
+  PAYMENT_FAILED
+
+  @@map("payment_event_type")
+}
+
+enum PaymentEventOutcome {
+  APPLIED
+  IGNORED
+
+  @@map("payment_event_outcome")
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  email              String             @unique
+  passwordHash       String             @map("password_hash")
+  role               UserRole
+  orders             Order[]
+  idempotencyRecords OrderIdempotency[]
+
+  @@map("users")
+}
+
+model Product {
+  id                String   @id @default(uuid())
+  name              String
+  unitPriceMinor    BigInt   @map("unit_price_minor")
+  currency          Currency @default(LKR)
+  availableQuantity BigInt   @default(0) @map("available_quantity")
+  orders            Order[]
+
+  @@map("products")
+}
+
+model Order {
+  id                String            @id @default(uuid())
+  customerId        String            @map("customer_id")
+  productId         String            @map("product_id")
+  productName       String            @map("product_name")
+  quantity          BigInt
+  unitPriceMinor    BigInt            @map("unit_price_minor")
+  totalMinor        BigInt            @map("total_minor")
+  currency          Currency          @default(LKR)
+  status            OrderStatus       @default(PENDING)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  customer          User              @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  product           Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  history           OrderTransition[]
+  idempotencyRecord OrderIdempotency?
+  paymentEvents     PaymentEvent[]
+
+  @@index([customerId, createdAt(sort: Desc), id(sort: Desc)], map: "orders_customer_created_id_idx")
+  @@index([customerId, status, createdAt(sort: Desc), id(sort: Desc)], map: "orders_customer_status_created_id_idx")
+  @@index([createdAt(sort: Desc), id(sort: Desc)], map: "orders_created_id_idx")
+  @@index([status, createdAt(sort: Desc), id(sort: Desc)], map: "orders_status_created_id_idx")
+  @@index([productId], map: "orders_product_id_idx")
+  @@map("orders")
+}
+
+model OrderTransition {
+  orderId    String           @map("order_id")
+  sequence   Int              @db.SmallInt
+  fromStatus OrderStatus?     @map("from_status")
+  toStatus   OrderStatus      @map("to_status")
+  reason     TransitionReason
+  occurredAt DateTime         @default(now()) @map("occurred_at") @db.Timestamptz(3)
+  order      Order            @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@id([orderId, sequence])
+  @@map("order_transitions")
+}
+
+model OrderIdempotency {
+  customerId String   @map("customer_id")
+  key        String
+  productId  String   @map("product_id")
+  quantity   BigInt
+  // Nullable only during the uncommitted claim; creation finalizes this link.
+  orderId    String?  @unique @map("order_id")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  customer   User     @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  order      Order?   @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@id([customerId, key])
+  @@map("order_idempotency")
+}
+
+model PaymentEvent {
+  eventId    String               @id @map("event_id")
+  orderId    String               @map("order_id")
+  type       PaymentEventType
+  // Finalized to APPLIED/IGNORED in the same transaction as processing.
+  outcome    PaymentEventOutcome?
+  acceptedAt DateTime             @default(now()) @map("accepted_at") @db.Timestamptz(3)
+  order      Order                @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([orderId], map: "payment_events_order_id_idx")
+  @@map("payment_events")
+}

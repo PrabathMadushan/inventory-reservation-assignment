@@ -1,0 +1,27 @@
+import { useCallback, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import type { Session } from '../../validation/api'
+import { AuthContext } from './auth-context'
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null)
+  const client = useQueryClient()
+  const signIn = useCallback(
+    (next: Session) => {
+      client.clear()
+      setSession(next)
+    },
+    [client],
+  )
+  const signOut = useCallback(() => {
+    // Clears cached queries/mutations and cancels active query requests.
+    client.clear()
+    setSession(null)
+  }, [client])
+  return (
+    <AuthContext.Provider value={{ session, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}

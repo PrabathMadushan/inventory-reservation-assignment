@@ -1,0 +1,51 @@
+{
+  "name": "inventory-reservation-assignment",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22.19.0 <23",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "setup:env": "node tools/setup-env.mjs",
+    "dev": "concurrently --kill-others --names api,web \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run start:dev --workspace apps/api",
+    "dev:web": "npm run dev --workspace apps/web",
+    "build": "npm run build --workspaces",
+    "start:api": "npm run start:prod --workspace apps/api",
+    "preview:web": "npm run preview --workspace apps/web",
+    "test": "npm run test --workspace apps/api -- --runInBand",
+    "test:web": "npm run test --workspace apps/web",
+    "test:api:e2e": "npm run db:test:prepare && npm run test:e2e --workspace apps/api -- --runInBand",
+    "lint": "npm run lint --workspaces",
+    "db:init": "node --env-file=.env tools/db.mjs init",
+    "db:start": "node --env-file=.env tools/db.mjs start",
+    "db:stop": "node --env-file=.env tools/db.mjs stop",
+    "db:check": "node --env-file=.env tools/db.mjs check",
+    "postinstall": "node tools/generate-prisma.mjs",
+    "db:generate": "node tools/generate-prisma.mjs",
+    "db:migrate": "node --env-file=.env tools/database.mjs migrate",
+    "db:seed": "node --env-file=.env tools/database.mjs seed",
+    "db:reset": "node --env-file=.env tools/database.mjs reset",
+    "db:test:prepare": "node --env-file=.env tools/database.mjs test:prepare",
+    "postman:generate": "node tools/generate-postman.mjs",
+    "postman:validate": "node tools/validate-postman.mjs",
+    "postman:test": "node tools/run-postman.mjs",
+    "postman:capture": "node tools/run-postman.mjs --capture-examples",
+    "package:source": "pwsh -NoProfile -File tools/package-source.ps1",
+    "package:verify": "pwsh -NoProfile -File tools/verify-source.ps1"
+  },
+  "devDependencies": {
+    "ajv-draft-04": "1.0.0",
+    "concurrently": "10.0.5",
+    "newman": "6.2.2",
+    "pg": "8.23.1"
+  },
+  "overrides": {
+    "handlebars": "4.7.10"
+  }
+}
