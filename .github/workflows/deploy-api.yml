@@ -1,0 +1,62 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "tools/generate-prisma.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - "deploy/inventory-api.service"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.19.0"
+          cache: npm
+
+      - name: Install and build the API
+        run: |
+          npm ci --include=optional
+          npm run build --workspace apps/api
+          if [ -d node_modules/.prisma ]; then
+            cp -a node_modules/.prisma /tmp/prisma-client
+          fi
+          npm prune --omit=dev --ignore-scripts
+          if [ -d /tmp/prisma-client ]; then
+            rm -rf node_modules/.prisma
+            cp -a /tmp/prisma-client node_modules/.prisma
+          fi
+
+      - name: Publish the API to the VPS
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+          SSH=(ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes)
+          RSYNC_RSH="ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes"
+          "${SSH[@]}" "$VPS_USER@$VPS_HOST" "mkdir -p ~/inventory-api/apps/api"
+          rsync -az --delete -e "$RSYNC_RSH" apps/api/dist/ "$VPS_USER@$VPS_HOST:inventory-api/apps/api/dist/"
+          rsync -az --delete -e "$RSYNC_RSH" node_modules/ "$VPS_USER@$VPS_HOST:inventory-api/node_modules/"
+          rsync -az -e "$RSYNC_RSH" package.json package-lock.json "$VPS_USER@$VPS_HOST:inventory-api/"
+          rsync -az -e "$RSYNC_RSH" apps/api/package.json "$VPS_USER@$VPS_HOST:inventory-api/apps/api/package.json"
+          rsync -az -e "$RSYNC_RSH" deploy/inventory-api.service "$VPS_USER@$VPS_HOST:inventory-api/inventory-api.service"
+          "${SSH[@]}" "$VPS_USER@$VPS_HOST" "sudo cp ~/inventory-api/inventory-api.service /etc/systemd/system/inventory-api.service && sudo systemctl daemon-reload && sudo systemctl enable inventory-api && sudo systemctl restart inventory-api && for i in 1 2 3 4 5 6 7 8 9 10; do curl -fsS http://127.0.0.1:4000/api && exit 0; sleep 2; done; sudo systemctl status inventory-api --no-pager; exit 1"
