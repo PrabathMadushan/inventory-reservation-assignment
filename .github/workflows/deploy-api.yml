@@ -55,7 +55,10 @@ jobs:
           "${SSH[@]}" "$VPS_USER@$VPS_HOST" "mkdir -p ~/inventory-api/apps/api"
           rsync -az --delete -e "$RSYNC_RSH" apps/api/dist/ "$VPS_USER@$VPS_HOST:inventory-api/apps/api/dist/"
           rsync -az --delete -e "$RSYNC_RSH" node_modules/ "$VPS_USER@$VPS_HOST:inventory-api/node_modules/"
+          if [ -d apps/api/node_modules ]; then
+            rsync -az --delete -e "$RSYNC_RSH" apps/api/node_modules/ "$VPS_USER@$VPS_HOST:inventory-api/apps/api/node_modules/"
+          fi
           rsync -az -e "$RSYNC_RSH" package.json package-lock.json "$VPS_USER@$VPS_HOST:inventory-api/"
           rsync -az -e "$RSYNC_RSH" apps/api/package.json "$VPS_USER@$VPS_HOST:inventory-api/apps/api/package.json"
           rsync -az -e "$RSYNC_RSH" deploy/inventory-api.service "$VPS_USER@$VPS_HOST:inventory-api/inventory-api.service"
-          "${SSH[@]}" "$VPS_USER@$VPS_HOST" "sudo cp ~/inventory-api/inventory-api.service /etc/systemd/system/inventory-api.service && sudo systemctl daemon-reload && sudo systemctl enable inventory-api && sudo systemctl restart inventory-api && for i in 1 2 3 4 5 6 7 8 9 10; do curl -fsS http://127.0.0.1:4000/api && exit 0; sleep 2; done; sudo systemctl status inventory-api --no-pager; exit 1"
+          "${SSH[@]}" "$VPS_USER@$VPS_HOST" "sudo cp ~/inventory-api/inventory-api.service /etc/systemd/system/inventory-api.service && sudo systemctl daemon-reload && sudo systemctl enable inventory-api && sudo systemctl restart inventory-api && for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4000/api && exit 0; sleep 2; done; sudo systemctl status inventory-api --no-pager; exit 1"
