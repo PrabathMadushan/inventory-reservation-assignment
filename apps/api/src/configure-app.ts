@@ -5,6 +5,7 @@ import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 export function configureApp(app: INestApplication): void {
   const config = app.get(ConfigService);
+  app.getHttpAdapter().getInstance().disable('x-powered-by');
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({

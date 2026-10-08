@@ -46,6 +46,7 @@
     "pg": "8.23.1"
   },
   "overrides": {
-    "handlebars": "4.7.10"
+    "handlebars": "4.7.10",
+    "lodash": "4.18.1"
   }
 }

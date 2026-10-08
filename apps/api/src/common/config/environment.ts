@@ -28,6 +28,9 @@ export function validateEnvironment(input: Record<string, unknown>) {
   const jwtSecret = required('JWT_SECRET');
   if (jwtSecret.length < 32)
     throw new Error('JWT_SECRET must contain at least 32 characters.');
+  const webhookSecret = required('WEBHOOK_SECRET');
+  if (webhookSecret.length < 32)
+    throw new Error('WEBHOOK_SECRET must contain at least 32 characters.');
   const origin = new URL(required('FRONTEND_ORIGIN'));
   if (
     !['http:', 'https:'].includes(origin.protocol) ||
@@ -45,7 +48,7 @@ export function validateEnvironment(input: Record<string, unknown>) {
     DATABASE_URL: databaseUrl,
     TEST_DATABASE_URL: testDatabaseUrl,
     JWT_SECRET: jwtSecret,
-    WEBHOOK_SECRET: required('WEBHOOK_SECRET'),
+    WEBHOOK_SECRET: webhookSecret,
     FRONTEND_ORIGIN: origin.origin,
   };
 }

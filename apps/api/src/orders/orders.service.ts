@@ -35,6 +35,10 @@ export class OrdersService {
   ) {
     if (typeof key !== 'string' || !key.trim())
       throw new BadRequestException('Idempotency-Key is required.');
+    if (key.length > 256)
+      throw new BadRequestException(
+        'Idempotency-Key must be at most 256 characters.',
+      );
     const quantity = BigInt(input.quantity);
     return this.prisma.$transaction(
       async (tx) => {

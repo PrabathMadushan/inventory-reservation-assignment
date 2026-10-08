@@ -2,6 +2,16 @@
 
 Import **inventory.postman_collection.json** and **local.postman_environment.json** into Postman. The collection is our own Collection v2.1 export, with nine ordered folders, 91 requests, and 182 assertions. Every request includes a captured response example from the implemented API. Login tokens in examples are redacted; request authentication and credentials remain variable placeholders. Example order IDs/timestamps are real nonsecret captured values, not identifiers to copy into requests.
 
+## Demo accounts
+
+`npm run db:reset` creates these three accounts. Every account uses the password **`DemoPass123!`**.
+
+| Email | Role | What they can do |
+| --- | --- | --- |
+| `alice@example.test` | CUSTOMER | Reserve stock, create and view their own orders, cancel a pending order |
+| `bob@example.test` | CUSTOMER | Same customer actions, isolated from Alice's orders |
+| `ops@example.test` | OPERATIONS | Read every customer's orders; cannot use customer reserve, create, or cancel routes |
+
 ## Configure and run in Postman
 
 1. Start the application using the root README. Use a fresh seed for a complete run: stop API processes on Windows if client generation is needed, then run `npm run db:reset` and `npm run dev`. **db:reset deletes development assignment data.** Use the isolated runner below when you want to preserve existing demo orders.
