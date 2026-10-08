@@ -32,14 +32,13 @@ jobs:
         run: |
           npm ci --include=optional
           npm run build --workspace apps/api
-          if [ -d node_modules/.prisma ]; then
-            cp -a node_modules/.prisma /tmp/prisma-client
-          fi
-          npm prune --omit=dev --ignore-scripts
-          if [ -d /tmp/prisma-client ]; then
-            rm -rf node_modules/.prisma
-            cp -a /tmp/prisma-client node_modules/.prisma
-          fi
+          cp -a node_modules/.prisma /tmp/prisma-client
+          cp -a apps/api/dist /tmp/api-dist
+          npm ci --omit=dev --include=optional --ignore-scripts
+          npm rebuild bcrypt
+          rm -rf node_modules/.prisma apps/api/dist
+          cp -a /tmp/prisma-client node_modules/.prisma
+          cp -a /tmp/api-dist apps/api/dist
 
       - name: Publish the API to the VPS
         env:
