@@ -1,11 +1,12 @@
 import { ValidationPipe } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { Express } from 'express';
 import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 export function configureApp(app: INestApplication): void {
   const config = app.get(ConfigService);
-  app.getHttpAdapter().getInstance().disable('x-powered-by');
+  (app.getHttpAdapter().getInstance() as Express).disable('x-powered-by');
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({

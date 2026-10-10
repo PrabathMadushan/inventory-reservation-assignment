@@ -12,7 +12,7 @@ npm run test:web
 npm run test:api:e2e
 ```
 
-Each command must exit successfully. Integration fixtures restore the test seed afterward. Final Phase 7 result: 131 PostgreSQL/API tests across six suites, 48 frontend tests across seven suites, and 13 backend unit tests across two suites passed. Both builds and lint checks passed. The test database ended with three users, five products, zero orders, and zero incomplete key/event claims. Development demo data was preserved. Measured results and remaining submission gates are recorded in WORK_LOG.md and IMPLEMENTATION_PLAN.md.
+Each command must exit successfully. Integration fixtures restore the test seed afterward. Measured on 10 October 2026 against localhost `inventory_test`: lint passed, build passed, 14 API unit tests, 53 frontend tests, and 131 PostgreSQL/API tests across six suites. Postman on that same database passed 91 requests and 182 assertions. The earlier Phase 7 tree recorded 13 unit tests and 48 frontend tests; those counts are not this checkout. Measured results are recorded in WORK_LOG.md and IMPLEMENTATION_PLAN.md.
 
 ## Assignment evidence map
 
@@ -62,4 +62,4 @@ The Postman artifacts are now verified through Newman: 91 requests and 182 asser
 
 ## Phase 9 reproducibility
 
-Fresh source-archive extraction, lockfile installation, new native PostgreSQL cluster, migration/repeat seed/reset, both builds/lints, all 131 API/48 frontend/13 unit tests, 91-request Postman run, production startup/preview, and full API process restart passed. Original development data was preserved. Final archive paths/content checksums/private configuration exclusions are verified by package:verify; see docs/SUBMISSION.md and WORK_LOG.md.
+Historical Phase 9 clean-copy result: a fresh source-archive extraction passed lockfile installation, a new native PostgreSQL cluster, migration/repeat seed/reset, both builds/lints, 131 API / 48 frontend / 13 unit tests, a 91-request Postman run, production startup/preview, and a full API process restart. Original development data was preserved. Current workspace results are in the command section above. Archive checks use package:verify; see docs/SUBMISSION.md and WORK_LOG.md.

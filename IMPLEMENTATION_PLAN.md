@@ -2,6 +2,8 @@
 
 Status: Required Phases 1–9 complete and locally verified. Source ZIP prepared. Optional deployment is documented from the 9 October 2026 hosted checks. Known limitations and unmeasured planning time remain disclosed.
 
+Current status, 10 October 2026: the signed-in session is React state plus `sessionStorage` key `inventory.session`. Latest measured checks: lint passed, build passed, 14 API unit tests, 53 frontend tests, 131 PostgreSQL/API tests, and Postman 91 requests / 182 assertions. Older phase paragraphs below keep the counts from those phases.
+
 Pre-Phase 3 UI foundation revision: complete and verified. Tailwind CSS/daisyUI and shared component separation are ready for Phase 3.
 
 Source: `C:\Users\praba\Downloads\SSE Assignment Full Stack.pdf`, all four pages.

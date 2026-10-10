@@ -1,6 +1,6 @@
 # Local submission
 
-Submit `.local/submission/inventory-assignment-source.zip`. It extracts into `inventory-assignment/`; start with README.md. The private source repository is [PrabathMadushan/inventory-reservation-assignment](https://github.com/PrabathMadushan/inventory-reservation-assignment), on branch main. Use the ZIP when the reviewer does not have repository access. The ZIP includes both apps, migrations/schema/seed/reset, tests, setup tools, environment examples, lockfile, engineering/API/verification/walkthrough notes, work log, implementation plan, sanitized Postman collection/environment, and the optional presentation gateway source (`gateway/Cargo.toml`, `gateway/src`, `gateway/README.md`).
+Submit `.local/submission/inventory-assignment-source.zip`. It extracts into `inventory-assignment/`; start with README.md. The public source repository is [PrabathMadushan/inventory-reservation-assignment](https://github.com/PrabathMadushan/inventory-reservation-assignment), on branch main. Use the ZIP when sending the archive directly. The ZIP includes both apps, migrations/schema/seed/reset, tests, setup tools, environment examples, lockfile, engineering/API/verification/walkthrough notes, work log, implementation plan, sanitized Postman collection/environment, and the optional presentation gateway source (`gateway/Cargo.toml`, `gateway/src`, `gateway/README.md`).
 
 Dependencies, builds, `gateway/target`, database files, private .env files, runtime tokens, logs, and temporary evidence are excluded. `npm run package:source` rebuilds the ZIP and a SHA-256 per-file manifest; `npm run package:verify` checks archive paths, counts, contents against that manifest, and private-configuration/JWT exclusion. These packaging commands require PowerShell 7 on Windows; running the delivered application uses the normal Node/PostgreSQL prerequisites. The archive and external manifest are generated outputs, not source files to include recursively.
 
@@ -8,7 +8,7 @@ Dependencies, builds, `gateway/target`, database files, private .env files, runt
 
 The source archive was extracted into a separate folder without node_modules, builds, .env, or database data. Verification uses a newly initialized PostgreSQL 16.1 cluster, separate from the retained developer cluster. To avoid port conflicts, the extracted copy's generated private .env uses database 5434, API 4002, and frontend origin/API preview 5174. Database names remain inventory_development and inventory_test, matching the setup/test safety guards. The default submission ports remain 5433/4000/5173.
 
-Final measured results are recorded in WORK_LOG.md. The extracted copy passed:
+The table below is the earlier clean-copy extraction, not this workspace's latest run. Final measured results for that extraction are recorded in WORK_LOG.md. The extracted copy passed:
 
 | Check | Result |
 | --- | --- |
@@ -25,7 +25,7 @@ Final measured results are recorded in WORK_LOG.md. The extracted copy passed:
 
 The clean exercise verifies the installed application source; final documentation/progress entries and packaging tooling were refreshed afterward without changing that tested application source. Web lint was made explicit (`oxlint --no-ignore src vite.config.ts`) so extraction under an ignored parent directory still checks the intended source files.
 
-On 10 October 2026 the current workspace passed 14 API unit tests and 53 frontend tests. The PostgreSQL API suite (131) and Postman run (91 requests / 182 assertions) were not repeated; those remain the last measured results from the clean-copy exercise above.
+On 10 October 2026 this workspace passed `npm run lint`, `npm run build`, 14 API unit tests, 53 frontend tests, 131 PostgreSQL/API tests, and a Postman run of 91 requests / 182 assertions with 0 failures. The database suites ran against localhost `inventory_test` only.
 
 This is an extracted source-archive verification, not a remote-clone verification claim. Original developer data is preserved. The temporary clean cluster is stopped after verification; its generated private configuration and files remain ignored under .local for recovery of evidence.
 

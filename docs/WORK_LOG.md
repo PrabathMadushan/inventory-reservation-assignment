@@ -417,7 +417,17 @@ Recorded 10 October 2026. This note is not added to the measured Phase 1–9 tot
 - A pending customer order has **Pay**. The optional Rust gateway in `gateway/` checks the signed-in customer, issues a one-time ticket, and redirects to the app. The graded webhook route and Postman collection are unchanged.
 - `inventory.session` in `sessionStorage` restores the same-tab session after that redirect. Sign-out removes it. The reservation intent still omits the bearer token.
 - The source ZIP includes the gateway crate and excludes `gateway/target`.
-- API unit tests: 14 passed. Frontend tests: 53 passed. The PostgreSQL API suite and Postman run were not repeated; the last measured results remain 131 API tests and 91 requests / 182 assertions.
+- API unit tests: 14 passed. Frontend tests: 53 passed. The PostgreSQL API suite and Postman run were repeated in the next section.
+
+## Local verification rerun
+
+Recorded 10 October 2026, after the presentation note above. This supersedes that note's earlier statement that the PostgreSQL API suite and Postman run were not repeated.
+
+- `apps/api/src/configure-app.ts` types the Express `disable('x-powered-by')` call. `npm run lint` passed for both workspaces. `npm run build` passed.
+- API unit tests: 14 passed. Frontend tests: 53 passed.
+- `npm run test:api:e2e` against `127.0.0.1` database `inventory_test`: 6 suites, 131 tests passed.
+- `npm run postman:test` on that same database: 91 requests, 182 assertions, 0 failures.
+- The configured remote database was not migrated, seeded, or reset. `.env` was not modified.
 
 ## AI usage
 

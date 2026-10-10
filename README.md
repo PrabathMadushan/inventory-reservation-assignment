@@ -134,7 +134,7 @@ npm run preview:web
 
 The preview is a local verification server, not a cloud deployment. It uses port 5173 so the configured CORS origin remains consistent.
 
-Current checks on 10 October 2026: **14 API unit tests and 53 frontend tests passed**. The last measured PostgreSQL/API run remains **131 tests**, and the last measured Postman run remains **91 requests / 182 assertions**; those suites were not repeated because the local test database was not available. [Verification guide](docs/VERIFICATION.md) maps the required scenarios to executable tests and explains database contention proof and evidence limits.
+Current checks on 10 October 2026, against localhost database `inventory_test`: **lint passed, build passed, 14 API unit tests, 53 frontend tests, 131 PostgreSQL/API tests, and Postman 91 requests / 182 assertions with 0 failures**. [Verification guide](docs/VERIFICATION.md) maps the required scenarios to executable tests and explains database contention proof and evidence limits.
 
 ## Postman collection
 
@@ -179,7 +179,7 @@ npm run package:source
 npm run package:verify
 ```
 
-Generated output is `.local/submission/inventory-assignment-source.zip` with a SHA-256 file manifest alongside it. Extract into a fresh folder, then follow Install and start above. The source repository is [PrabathMadushan/inventory-reservation-assignment](https://github.com/PrabathMadushan/inventory-reservation-assignment) (private). The ZIP remains available for submission without GitHub access.
+Generated output is `.local/submission/inventory-assignment-source.zip` with a SHA-256 file manifest alongside it. Extract into a fresh folder, then follow Install and start above. The source repository is public: [PrabathMadushan/inventory-reservation-assignment](https://github.com/PrabathMadushan/inventory-reservation-assignment). The ZIP remains available for submission without using GitHub.
 
 ## Optional deployment
 
