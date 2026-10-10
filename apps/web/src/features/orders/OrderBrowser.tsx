@@ -9,10 +9,12 @@ export function OrderBrowser({
   audience,
   selectedId,
   onSelect,
+  paymentNotice = null,
 }: {
   audience: OrderAudience
   selectedId: string | null
   onSelect: (id: string | null) => void
+  paymentNotice?: 'success' | 'failure' | null
 }) {
   const [parameters, setParameters] = useState<OrderListInput>({
     page: 1,
@@ -22,6 +24,7 @@ export function OrderBrowser({
     <OrderDetail
       id={selectedId}
       audience={audience}
+      paymentNotice={paymentNotice}
       onBack={() => onSelect(null)}
     />
   ) : (

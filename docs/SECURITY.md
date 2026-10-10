@@ -35,7 +35,7 @@ Login still succeeds for the seeded demo accounts over HTTPS.
 | Medium | Fixed on the VM | HTTPS responses had no `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, or `Referrer-Policy`, and they advertised `X-Powered-By: Express`. Caddy now sets those headers and removes `Server` and `X-Powered-By`. |
 | Medium | Fixed in git, live after the next API deploy | The Node process listened on every interface. `main.ts` now binds `127.0.0.1` when `NODE_ENV=production`, so a later firewall mistake does not publish the cleartext port. The running process is still the previous build until that deploy. |
 | Medium | Fixed in git, live after the next API deploy | GitHub Actions trusted whatever SSH host key the VM presented during the deploy. The workflow now has `contents: read` and pins the VM host key. |
-| Low | Fixed in git, live after the next API deploy | `WEBHOOK_SECRET` had no minimum length. Startup now requires at least 32 characters. The production secret already meets that. |
+| Info | Accepted for the assignment | `WEBHOOK_SECRET` has no 32-character minimum. The local demo value is `local-demo-webhook-secret`. A blank value still fails startup. The hosted secret stays on the server and can be longer. |
 | Low | Fixed in git, live after the next API deploy | Product ids, payment event ids, order ids, and `Idempotency-Key` values had no length cap, so an authenticated caller could store very large strings. They are now limited to 256 characters. |
 | Low | Fixed in git, live after the next API deploy | `@nestjs/config` installed `lodash@4.17.21`, which has prototype-pollution and `_.template` advisories. The app does not pass request data into those lodash functions. The lockfile now resolves `lodash@4.18.1`. |
 | Low | In git, live after the next frontend deploy | The Vercel HTML response has HSTS from Vercel and does not set `X-Frame-Options` or `X-Content-Type-Options`. `vercel.json` adds those headers. Tokens are not cookies, so a framed page cannot be read by another origin. |
@@ -51,7 +51,7 @@ Repository:
 
 - `apps/api/src/main.ts` binds production to localhost.
 - `apps/api/src/configure-app.ts` disables `X-Powered-By`.
-- `apps/api/src/common/config/environment.ts` requires a 32-character webhook secret.
+- `apps/api/src/common/config/environment.ts` requires a non-empty webhook secret and accepts `local-demo-webhook-secret`. `JWT_SECRET` still requires 32 characters.
 - Order and webhook DTOs, and the idempotency key, reject values longer than 256 characters.
 - `package.json` overrides `lodash` to 4.18.1.
 - `deploy/inventory-api.service` adds a read-only home, a private temp directory, and kernel/module protections.
@@ -67,8 +67,8 @@ Already applied on the VM:
 
 `apps/api` unit tests for startup configuration: 11 passed.
 
-## What remains until the next deploy
+## Publish status
 
-The VM is still running the API build from the last GitHub deploy. Localhost binding, the webhook-secret length check, the 256-character limits, the Express `X-Powered-By` disable, and `lodash@4.18.1` ship when that workflow runs. Caddy already strips `X-Powered-By` on the public URL, and the firewall already blocks port 4000.
+On 9 October 2026 the compiled API `dist` from this workspace was copied onto the VM and `inventory-api` was restarted. That running build binds production to localhost, accepts a non-empty webhook secret including `local-demo-webhook-secret`, and keeps the 256-character input limits. The existing Linux `node_modules` were left in place. Caddy already strips `X-Powered-By` on the public URL, and the firewall already blocks port 4000. The Vercel HTML response already includes the headers from `vercel.json`.
 
-Pushing these files to `main` runs the API workflow. The frontend headers apply when Vercel builds a deployment that contains `vercel.json`.
+Pushing `main` still runs the GitHub Actions API workflow. A Windows checkout must not replace the VM `node_modules` with a Windows install.

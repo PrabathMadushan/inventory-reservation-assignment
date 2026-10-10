@@ -2,7 +2,7 @@
 
 Full-stack take-home assignment using React, NestJS, TypeScript, and PostgreSQL.
 
-**Current delivery: Phases 1–9.** Runnable React/NestJS apps, PostgreSQL schema/migration/seed, bearer authentication, products, atomic stock reservation, customer order creation/list/detail/cancellation, and simulated payment callbacks with durable event deduplication. The frontend uses React Query, React Hook Form/Zod, and shared Tailwind/daisyUI components. PostgreSQL races are verified across independent NestJS instances. Operations can inspect all customers' orders through a read-only list/detail workspace. Required workflows, automated verification, Postman artifacts, engineering notes, and source packaging are complete. Clean-archive results and remaining limitations are recorded in docs/SUBMISSION.md. Optional deployment is not included.
+**Current delivery: Phases 1–9.** Runnable React/NestJS apps, PostgreSQL schema/migration/seed, bearer authentication, products, atomic stock reservation, customer order creation/list/detail/cancellation, and simulated payment callbacks with durable event deduplication. The frontend uses React Query, React Hook Form/Zod, and shared Tailwind/daisyUI components. PostgreSQL races are verified across independent NestJS instances. Operations can inspect all customers' orders through a read-only list/detail workspace. Required workflows, automated verification, Postman artifacts, engineering notes, and source packaging are complete. Clean-archive results and the hosted demo are recorded in docs/SUBMISSION.md.
 
 ## Prerequisites
 
@@ -183,4 +183,26 @@ Generated output is `.local/submission/inventory-assignment-source.zip` with a S
 
 ## Optional deployment
 
-Required Phases 1–9 are complete. Optional deployment remains unimplemented and needs separate provider/configuration decisions; the local submission does not depend on it. See docs/SUBMISSION.md for verification evidence and limitations.
+Local setup does not depend on hosting. The hosted demo uses the same seeded accounts and demo-only data.
+
+| | |
+| --- | --- |
+| Demo URL | https://app.prabhathmadhushan.cv |
+| API base URL | https://api.prabhathmadhushan.cv/api |
+| Customer A | alice@example.test / DemoPass123! |
+| Customer B | bob@example.test / DemoPass123! |
+| Operations | ops@example.test / DemoPass123! |
+| Local webhook secret | local-demo-webhook-secret |
+| Hosted webhook secret | Set only in the API server environment. It is not in the frontend bundle or this repository. |
+
+The frontend is the Vite app on Vercel project `chitta-lab-inventory`. Production `VITE_API_BASE_URL` is `https://api.prabhathmadhushan.cv/api`. No database, JWT, or webhook secret is configured on Vercel. `vercel.json` security headers are on the live HTML response.
+
+The API is the NestJS app on the GCP VM behind `api.prabhathmadhushan.cv`. Caddy terminates HTTPS and proxies to `127.0.0.1:4000`. systemd unit `inventory-api` runs `node dist/main.js` as `prabhath-vps` with `/home/prabhath-vps/inventory-api/.env`. [.github/workflows/deploy-api.yml](.github/workflows/deploy-api.yml) builds on Linux and publishes `dist`, production `node_modules`, and [deploy/inventory-api.service](deploy/inventory-api.service). A Windows checkout must not upload its own `node_modules`, because native modules such as bcrypt are platform-specific. The 9 October 2026 publish copied the compiled `dist` onto the Linux `node_modules` already on the VM and restarted the service.
+
+Checked on 9 October 2026:
+
+- Alice reserved one USB C Hub, saw PENDING with the price snapshot and `ORDER_CREATED`, and cancelled it. Bob's order list stayed empty. Operations filtered PENDING and opened that order, including customer id `user-alice`. Hub stock returned to 20. Headphones stayed at 1.
+- Order `a5bb58fc-c23e-44d4-b257-97702531451e` was pending before the API restart. After restart, without seed or reset, the same id was still PENDING with one history entry. Repeating its idempotency key returned HTTP 200 and the same id, and keyboard stock stayed at 19. Cancellation then restored that stock to 20.
+- A wrong webhook secret returned 401 `UNAUTHORIZED`. The configured secret then returned 200 `IGNORED` for that cancelled order, and the same event id returned `DUPLICATE`.
+
+This does not guarantee assessment marks. Details are in [docs/SUBMISSION.md](docs/SUBMISSION.md).

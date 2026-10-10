@@ -8,15 +8,18 @@ import { Feedback } from '../../components/ui/Feedback'
 import { Button } from '../../components/ui/Button'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { OrderCancelAction } from './OrderCancelAction'
+import { OrderPayAction } from './OrderPayAction'
 
 export function OrderDetail({
   id,
   onBack,
   audience = 'customer',
+  paymentNotice = null,
 }: {
   id: string
   onBack: () => void
   audience?: OrderAudience
+  paymentNotice?: 'success' | 'failure' | null
 }) {
   const query = useOrder(id, audience)
   useSessionError(query.error)
@@ -60,11 +63,30 @@ export function OrderDetail({
         order && (
           <>
             {audience === 'customer' && (
-              <OrderCancelAction
-                id={id}
-                pending={order.status === 'PENDING'}
-                onRefresh={() => query.refetch()}
-              />
+              <div className="flex flex-wrap items-start gap-3">
+                <OrderPayAction
+                  id={id}
+                  pending={order.status === 'PENDING'}
+                />
+                <OrderCancelAction
+                  id={id}
+                  pending={order.status === 'PENDING'}
+                  onRefresh={() => query.refetch()}
+                />
+              </div>
+            )}
+            {paymentNotice === 'success' && order.status === 'CONFIRMED' && (
+              <Feedback tone="success">Payment confirmed.</Feedback>
+            )}
+            {paymentNotice === 'success' && order.status !== 'CONFIRMED' && (
+              <Feedback tone="error">Payment did not complete.</Feedback>
+            )}
+            {paymentNotice === 'failure' && (
+              <Feedback tone="error">
+                {order.status === 'FAILED'
+                  ? 'Payment failed. Reserved stock has been returned.'
+                  : 'Payment did not complete.'}
+              </Feedback>
             )}
             <div className="card border border-base-300 bg-base-100">
               <div className="card-body gap-4">

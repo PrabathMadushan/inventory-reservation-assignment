@@ -16,6 +16,7 @@ const clients: QueryClient[] = []
 afterEach(() => {
   cleanup()
   clients.splice(0).forEach((client) => client.clear())
+  sessionStorage.clear()
   vi.unstubAllGlobals()
 })
 

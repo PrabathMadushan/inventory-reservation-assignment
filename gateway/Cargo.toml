@@ -1,0 +1,10 @@
+[package]
+name = "payment-gateway"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Presentation-only page that calls the existing payment webhook."
+
+[dependencies]
+tiny_http = "0.12.0"
+ureq = { version = "2.12.1", default-features = false }

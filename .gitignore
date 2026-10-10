@@ -12,3 +12,7 @@ test-results/
 
 .neon
 .agents
+.cursor
+vps
+MAX_MARKS_REPORT.md
+.vercel

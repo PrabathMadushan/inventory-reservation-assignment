@@ -1,6 +1,6 @@
 # Inventory Reservation and Order Management - Implementation Plan
 
-Status: Required Phases 1–9 complete and locally verified. Source ZIP prepared. Optional deployment is unimplemented; known limitations and unmeasured planning time are disclosed.
+Status: Required Phases 1–9 complete and locally verified. Source ZIP prepared. Optional deployment is documented from the 9 October 2026 hosted checks. Known limitations and unmeasured planning time remain disclosed.
 
 Pre-Phase 3 UI foundation revision: complete and verified. Tailwind CSS/daisyUI and shared component separation are ready for Phase 3.
 
@@ -600,19 +600,19 @@ Walkthrough preparation for the required 45-minute discussion:
 
 Acceptance: a reviewer can follow the written instructions locally without a paid account; all required artifacts are present; evidence and limitations are accurate; the developer understands the implementation.
 
-Verified: a source ZIP was extracted without dependencies/builds/private configuration/database data. Fresh npm ci, generated configuration and a new PostgreSQL 16.1 cluster, both migrations, repeated seed/reset, both builds/lints, 13 unit + 48 frontend + 131 PostgreSQL/API tests, Postman validation and 91 requests/182 assertions passed. Production startup, preview asset/configuration, CORS, role/ownership/reservation/cancellation, and full API process restart passed. 100 app/schema/test files match the verified copy; original demo data remains intact. Final ZIP paths/checksums/private-value exclusions are validated. Engineering, expiry discussion, API, walkthrough, work-log, and submission notes are included. Optional deployment is not implemented. Earlier planning time and dependency-audit findings remain disclosed limitations.
+Verified: a source ZIP was extracted without dependencies/builds/private configuration/database data. Fresh npm ci, generated configuration and a new PostgreSQL 16.1 cluster, both migrations, repeated seed/reset, both builds/lints, 13 unit + 48 frontend + 131 PostgreSQL/API tests, Postman validation and 91 requests/182 assertions passed. Production startup, preview asset/configuration, CORS, role/ownership/reservation/cancellation, and full API process restart passed. 100 app/schema/test files match the verified copy; original demo data remains intact. Final ZIP paths/checksums/private-value exclusions are validated. Engineering, expiry discussion, API, walkthrough, work-log, and submission notes are included. Hosted demo evidence is in Phase 10. Earlier planning time and dependency-audit findings remain disclosed limitations.
 
 ### Phase 10 - Optional deployment bonus within remaining time
 
 Dependencies: every required acceptance gate above passes and actual remaining budget permits it. This phase is explicitly within the assignment's optional scope, not a reason to delay required artifacts.
 
-- [ ] Host frontend/backend so both customer and operations workflows work (up to 3 marks).
-- [ ] Use hosted PostgreSQL and demonstrate persistence after application restart/redeployment without reseeding (up to 1 mark).
-- [ ] Verify HTTPS, configured frontend/API URLs and CORS, authentication, webhook secret, and environment variables (up to 1 mark).
-- [ ] Use demo-only data and keep credentials/secrets out of the frontend bundle and repository.
-- [ ] Document demo URL, API base URL, demo access details, deployment steps, and restart/persistence evidence.
+- [x] Host frontend/backend so both customer and operations workflows work (up to 3 marks).
+- [x] Use hosted PostgreSQL and demonstrate persistence after application restart/redeployment without reseeding (up to 1 mark).
+- [x] Verify HTTPS, configured frontend/API URLs and CORS, authentication, webhook secret, and environment variables (up to 1 mark).
+- [x] Use demo-only data and keep credentials/secrets out of the frontend bundle and repository.
+- [x] Document demo URL, API base URL, demo access details, deployment steps, and restart/persistence evidence.
 
-Choose a hosting provider only when this phase begins and current availability is verified. Local setup remains independent of hosting. If hosting cannot be completed within the cap, record it as omitted or incomplete and finish the required submission.
+Verified on 9 October 2026. Frontend: https://app.prabhathmadhushan.cv on Vercel project chitta-lab-inventory, production deployment Ready, `VITE_API_BASE_URL=https://api.prabhathmadhushan.cv/api`, and no database, JWT, or webhook secret in the Vercel environment. API: https://api.prabhathmadhushan.cv/api through Caddy to the systemd service. Alice reserved and cancelled USB C Hub order `4756c545-3852-42dd-885d-30d53cfaff15`. Bob's list stayed empty. Operations filtered PENDING and opened that order with customer id `user-alice`. Keyboard order `a5bb58fc-c23e-44d4-b257-97702531451e` remained PENDING with its original history after an API restart without seed or reset; the same idempotency key returned HTTP 200 and did not reserve again; cancellation restored stock. A wrong webhook secret returned 401; the server secret then returned IGNORED and a replay returned DUPLICATE. Headphones remained at 1 and the other products at 20 after the checks. The hosted webhook secret was not copied into git. A guaranteed score is not claimed.
 
 ## 7. Final submission gate
 
@@ -647,6 +647,6 @@ Update this table as phases are implemented. Planned items must not be reported 
 | 7. Automated verification | Complete / verified | 6m 37s measured | Requirement-to-test map; 131 API + 48 frontend + 13 unit checks; six new retry-race/public-contract cases; fresh builds/lints and isolated DB cleanup passed |
 | 8. Postman submission | Complete / verified | 18m 23s measured | 91 requests / 182 assertions; all routes/scenarios; real sanitized examples; schema checks and repeat fresh Newman run passed; development preserved |
 | 9. Documentation and submission | Complete / locally verified | 14m 55s measured | Fresh archive install/cluster/build/tests/production restart passed; docs/walkthrough/source ZIP and checksums prepared; known limits disclosed |
-| 10. Optional deployment | Conditional / not started | - | Only after required gates pass and within time cap |
+| 10. Optional deployment | Complete / verified | Not separately stopwatched; see work log | Hosted UI, restart persistence, HTTPS, and webhook checks passed on 9 October 2026; demo URLs are in the README |
 
-Required local implementation and submission artifacts are complete. The source ZIP and checksum manifest are under .local/submission; docs/SUBMISSION.md records clean-archive evidence and limits. Optional deployment remains unimplemented and requires separate hosting/configuration decisions. The measured implementation total is below 12 hours; earlier planning duration was not measured, so the absolute total-time gate is not independently verified.
+Required local implementation and submission artifacts are complete. The source ZIP and checksum manifest are under .local/submission; docs/SUBMISSION.md records clean-archive evidence and the hosted demo. The measured implementation total through Phase 9 is below 12 hours; earlier planning duration was not measured, so the absolute total-time gate is not independently verified.

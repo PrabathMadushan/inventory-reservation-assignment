@@ -12,5 +12,13 @@ https://api.prabhathmadhushan.cv {
 		-Server
 		-X-Powered-By
 	}
-	reverse_proxy 127.0.0.1:4000
+	handle /gateway {
+		redir * /gateway/ 308
+	}
+	handle_path /gateway/* {
+		reverse_proxy 127.0.0.1:4001
+	}
+	handle {
+		reverse_proxy 127.0.0.1:4000
+	}
 }

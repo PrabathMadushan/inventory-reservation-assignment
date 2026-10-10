@@ -24,10 +24,13 @@ describe('startup configuration', () => {
       expect(() => validateEnvironment({ ...valid, [key]: '' })).toThrow(key);
     },
   );
-  it('rejects a short webhook secret', () => {
-    expect(() =>
-      validateEnvironment({ ...valid, WEBHOOK_SECRET: 'too-short' }),
-    ).toThrow('WEBHOOK_SECRET');
+  it('accepts the assignment local webhook secret', () => {
+    expect(
+      validateEnvironment({
+        ...valid,
+        WEBHOOK_SECRET: 'local-demo-webhook-secret',
+      }).WEBHOOK_SECRET,
+    ).toBe('local-demo-webhook-secret');
   });
   it('rejects wildcard CORS origins', () => {
     expect(() =>

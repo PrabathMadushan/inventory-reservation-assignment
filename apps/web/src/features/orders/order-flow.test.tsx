@@ -73,6 +73,7 @@ function mockApi(
   options: {
     cancel?: (options: RequestInit) => Promise<Response>
     read?: () => typeof order
+    start?: (options: RequestInit) => Promise<Response>
   } = {},
 ) {
   const mock = vi.fn((url: string, requestOptions: RequestInit) => {
@@ -93,6 +94,8 @@ function mockApi(
       return create(requestOptions)
     if (url.endsWith('/orders/order-1/cancel') && options.cancel)
       return options.cancel(requestOptions)
+    if (url.endsWith('/start') && options.start)
+      return options.start(requestOptions)
     if (url.endsWith('/orders/order-1'))
       return Promise.resolve(Response.json(options.read?.() ?? order))
     if (url.includes('/orders?')) {
@@ -350,10 +353,9 @@ describe('Customer reservation workflow', () => {
     view.unmount()
     clients.forEach((client) => client.clear())
     renderApp()
-    await login()
     await screen.findByRole('button', { name: 'Retry same reservation' })
     expect(
-      screen.getByRole('heading', { name: 'Reserve Mechanical Keyboard' }),
+      await screen.findByRole('heading', { name: 'Reserve Mechanical Keyboard' }),
     ).toBeTruthy()
     expect(create).toHaveBeenCalledTimes(1)
     fireEvent.click(
@@ -413,5 +415,47 @@ describe('Customer reservation workflow', () => {
       productId: product.id,
       quantity: 1,
     })
+  })
+  it('starts checkout from a pending order and returns only after the order is confirmed', async () => {
+    const ticket = 'a'.repeat(64)
+    const start = vi.fn(async (_input: RequestInit) => Response.json({ ticket }))
+    mockApi(async () => Response.json(order, { status: 201 }), { start })
+    renderApp()
+    await login()
+    reserve()
+    await screen.findByText('ORDER_CREATED')
+    fireEvent.click(screen.getByRole('button', { name: 'Pay' }))
+    await waitFor(() => expect(start).toHaveBeenCalledTimes(1))
+    const request = start.mock.calls[0][0]
+    expect(new Headers(request.headers).get('Authorization')).toBe(
+      'Bearer alice-token',
+    )
+    const body = JSON.parse(request.body as string) as {
+      orderId: string
+      returnOrigin: string
+    }
+    expect(body.orderId).toBe('order-1')
+    expect(body.returnOrigin).toBe(window.location.origin)
+    expect(request.body).not.toContain('alice-token')
+  })
+  it('trusts the refetched order after a payment return', async () => {
+    window.history.pushState(null, '', '/?payment=success&orderId=order-1')
+    sessionStorage.setItem(
+      'inventory.session',
+      JSON.stringify({
+        accessToken: 'alice-token',
+        user: {
+          id: 'user-alice',
+          email: 'alice@example.test',
+          role: 'CUSTOMER',
+        },
+      }),
+    )
+    mockApi(async () => Response.json(order, { status: 201 }), {
+      read: () => ({ ...order, status: 'CONFIRMED' }),
+    })
+    renderApp()
+    expect(await screen.findByText('Payment confirmed.')).toBeTruthy()
+    await waitFor(() => expect(window.location.search).toBe(''))
   })
 })

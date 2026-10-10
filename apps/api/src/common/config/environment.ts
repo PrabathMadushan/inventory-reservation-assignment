@@ -29,8 +29,6 @@ export function validateEnvironment(input: Record<string, unknown>) {
   if (jwtSecret.length < 32)
     throw new Error('JWT_SECRET must contain at least 32 characters.');
   const webhookSecret = required('WEBHOOK_SECRET');
-  if (webhookSecret.length < 32)
-    throw new Error('WEBHOOK_SECRET must contain at least 32 characters.');
   const origin = new URL(required('FRONTEND_ORIGIN'));
   if (
     !['http:', 'https:'].includes(origin.protocol) ||

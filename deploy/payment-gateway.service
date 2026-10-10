@@ -1,0 +1,28 @@
+[Unit]
+Description=Presentation payment gateway
+After=network-online.target inventory-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=prabhath-vps
+Group=prabhath-vps
+Environment=WEBHOOK_URL=http://127.0.0.1:4000/api/webhooks/payments
+EnvironmentFile=/home/prabhath-vps/inventory-api/.env
+EnvironmentFile=/home/prabhath-vps/payment-gateway.env
+ExecStart=/usr/local/bin/payment-gateway
+Restart=on-failure
+RestartSec=3
+MemoryMax=64M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectControlGroups=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

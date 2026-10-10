@@ -29,7 +29,7 @@ This is an extracted source-archive verification, not a remote-clone verificatio
 
 ## Known limits and disclosure
 
-- Optional public deployment was not implemented. No hosted URL or restart/redeployment bonus is claimed. Local production-mode startup is not cloud deployment.
+- Hosted demo: https://app.prabhathmadhushan.cv with API base https://api.prabhathmadhushan.cv/api. Sign in with alice@example.test, bob@example.test, or ops@example.test and password DemoPass123!. The local webhook secret is local-demo-webhook-secret. The hosted webhook secret stays in the API server environment and is not published. On 9 October 2026, Alice reserved and cancelled a USB C Hub in the hosted UI; Bob's list did not show it; operations filtered PENDING and opened it with customer id user-alice. Order a5bb58fc-c23e-44d4-b257-97702531451e survived an API restart without reseed, an idempotency retry returned the same order, and cancellation restored stock. A wrong webhook secret returned 401; the configured secret then returned IGNORED and a replay returned DUPLICATE. Deploy steps are in the README. Local production-mode startup is separate from this hosted demo. A guaranteed score is not claimed.
 - Authentication is the assignment's seeded bearer-token flow. Browser reload requires login; server-side revocation, refresh tokens, registration, and password recovery are outside scope.
 - Manual refresh discovers payment changes. Payment callbacks require the API-only secret and are simulated through Postman. No real payment processing or reservation expiry is implemented.
 - sessionStorage preserves an unresolved creation intent only within its browser tab. Closing the tab loses it; inspect My orders before another logical purchase.
