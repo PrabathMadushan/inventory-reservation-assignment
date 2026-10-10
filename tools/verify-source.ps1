@@ -20,7 +20,7 @@ try {
   if ($zip.Entries.Count -ne $manifest.Count) { throw 'Archive/manifest count mismatch' }
   foreach ($entry in $zip.Entries) {
     if ($entry.FullName.Contains('\') -or $entry.FullName.Contains('../') -or
-        $entry.FullName -match '/(node_modules|dist|coverage|\.git|\.local)/' -or
+        $entry.FullName -match '/(node_modules|dist|coverage|target|\.git|\.local)/' -or
         ($entry.FullName -match '/\.env[^/]*$' -and $entry.FullName -notmatch '/\.env\.example$')) { throw 'Unsafe or excluded archive path' }
     if (-not $expected.ContainsKey($entry.FullName)) { throw 'Unexpected archive entry' }
     $stream = $entry.Open(); $memory = [IO.MemoryStream]::new()

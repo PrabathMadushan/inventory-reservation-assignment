@@ -410,6 +410,15 @@ Recorded 9 October 2026. This pass was not given its own stopwatch, so it is not
 - Webhook checks against that cancelled order: wrong secret 401 `UNAUTHORIZED`; configured secret 200 `IGNORED`; identical event 200 `DUPLICATE`. The hosted secret was not printed or committed.
 - Hosted UI: Alice created and cancelled USB C Hub order `4756c545-3852-42dd-885d-30d53cfaff15` with `ORDER_CREATED` then `CUSTOMER_CANCELLED`. Bob's list showed 0 orders. Operations filtered PENDING and opened the order with customer id `user-alice`. Final hosted stock was 20 for every product except Limited Edition Headphones, which stayed at 1.
 
+## Presentation payment return
+
+Recorded 10 October 2026. This note is not added to the measured Phase 1–9 total.
+
+- A pending customer order has **Pay**. The optional Rust gateway in `gateway/` checks the signed-in customer, issues a one-time ticket, and redirects to the app. The graded webhook route and Postman collection are unchanged.
+- `inventory.session` in `sessionStorage` restores the same-tab session after that redirect. Sign-out removes it. The reservation intent still omits the bearer token.
+- The source ZIP includes the gateway crate and excludes `gateway/target`.
+- API unit tests: 14 passed. Frontend tests: 53 passed. The PostgreSQL API suite and Postman run were not repeated; the last measured results remain 131 API tests and 91 requests / 182 assertions.
+
 ## AI usage
 
 OpenAI Codex assisted with requirement extraction, plan creation/revision, running official project generators, workspace integration, local setup helpers, configuration, schema/migration/seed implementation, authentication, atomic reservation/payment/cancellation services, customer/operations UI, shared component/accessibility refinements, database/frontend tests, restart checks, and documentation. Cursor assisted with the webhook-secret startup change, the Vercel project check, the VPS publish, the hosted browser walkthrough, and this evidence note. The PDF was read and visually checked during planning. Generated/adapted code is verified using local builds, lint, automated checks against PostgreSQL, and live frontend/API checks; final actual outcomes are recorded above. The developer must review and understand these changes for the assignment walkthrough.

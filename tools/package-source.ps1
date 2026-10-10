@@ -5,7 +5,7 @@ $outputDirectory = Join-Path $sourceRoot '.local/submission'
 [IO.Directory]::CreateDirectory($outputDirectory) | Out-Null
 $archivePath = Join-Path $outputDirectory 'inventory-assignment-source.zip'
 $manifestPath = Join-Path $outputDirectory 'manifest.json'
-$excludedDirectories = @('node_modules', 'dist', 'coverage', '.git', '.local', 'test-results', 'playwright-report')
+$excludedDirectories = @('node_modules', 'dist', 'coverage', '.git', '.local', 'test-results', 'playwright-report', 'target')
 $files = [Collections.Generic.List[IO.FileInfo]]::new()
 function Collect-Source([string]$directory) {
   foreach ($entry in Get-ChildItem -LiteralPath $directory -Force) {
@@ -18,7 +18,7 @@ function Collect-Source([string]$directory) {
     }
   }
 }
-foreach ($directory in @('apps', 'docs', 'postman', 'tools')) { Collect-Source (Join-Path $sourceRoot $directory) }
+foreach ($directory in @('apps', 'docs', 'postman', 'tools', 'gateway')) { Collect-Source (Join-Path $sourceRoot $directory) }
 foreach ($name in @('README.md','IMPLEMENTATION_PLAN.md','package.json','package-lock.json','.gitignore','.env.example')) {
   $files.Add((Get-Item -LiteralPath (Join-Path $sourceRoot $name)))
 }

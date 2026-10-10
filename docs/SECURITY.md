@@ -22,7 +22,7 @@ Login still succeeds for the seeded demo accounts over HTTPS.
 | Input | Validation rejects unknown fields. Quantities are bounded. Prices and identity come from the database row, not the request body. |
 | Stock | Reservation is one conditional `UPDATE` that decrements only when enough stock remains. |
 | Errors | The global filter returns a code and message. Unexpected failures stay a generic 500. |
-| Browser | The access token lives in React memory. `sessionStorage` stores only the account-scoped retry key and order input. The webhook secret is not in the frontend bundle. |
+| Browser | The access token lives in React state and in the same-tab `sessionStorage` entry `inventory.session`, which sign-out removes. It is not stored in `localStorage`, cookies, or the payment URL. The reservation intent stores only the account-scoped retry key and order input. The webhook secret is not in the frontend bundle. |
 | CORS | One configured origin, `https://app.prabhathmadhushan.cv` in production. Methods are GET, POST, and OPTIONS. |
 | Secrets in git | `.env` is gitignored. The deploy workflow reads the SSH key, host, and user from GitHub secrets. |
 | Remote reset | `npm run db:seed` and `npm run db:reset` refuse any database that is not local `inventory_development` or `inventory_test`. |

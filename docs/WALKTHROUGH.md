@@ -19,7 +19,7 @@ Be ready to answer these using code and observed results:
 - Payment and cancellation race: both need the order FOR UPDATE; only PENDING may transition. One terminal history/release outcome commits, and the loser follows the contract.
 - Duplicate failed payment: persisted event uniqueness plus terminal state prevents another release. A changed accepted payload conflicts instead of changing the accepted event.
 - Two failed orders release the same product: atomic increments preserve both quantities.
-- The API restarts: database orders/keys/events/history survive; browser memory is not correctness authority. Browser reload requires login and can recover an unresolved creation intent from sessionStorage.
+- The API restarts: database orders/keys/events/history survive; browser storage is not correctness authority. The same tab restores `inventory.session` after checkout and can recover an unresolved creation intent from sessionStorage. Sign-out removes the session entry. The creation intent does not contain the bearer token.
 - Current product prices change: existing orders retain immutable server snapshots.
 - Operations tries customer cancellation: the backend role guard rejects it, even if the UI is bypassed.
 - Why no background expiry: it is excluded from implementation; the engineering note discusses a persisted deadline and coordinated database transition design.
